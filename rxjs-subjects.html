@@ -1,0 +1,53 @@
+<html>
+    <header>
+        <title>RX JS - Subjects</title>
+        <script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js"></script>
+    </header>
+    <body>
+        Full Observer:
+        <button id="btn" onclick="myOperatorClick()">
+            Subjects
+        </button>
+        <br />
+        <div id="something-to-show"></div>
+    </body>
+    <script>
+        function showOnUi(data) {
+            const childDiv = document.createElement('div');
+            childDiv.innerText = 'Data: ' + data;
+            document.getElementById('something-to-show').appendChild(childDiv);
+        }
+
+        const observerA = {
+            next: x => showOnUi('observerA got a next value: ' + JSON.stringify(x)),
+            error: err => showOnUi('observerA got an error: ' + err),
+            complete: () => showOnUi('observerA got a complete notification'),
+        };
+
+        const observerB = {
+            next: x => showOnUi('observerB got a next value: ' + JSON.stringify(x)),
+            error: err => showOnUi('observerB got an error: ' + err),
+            complete: () => showOnUi('observerB got a complete notification'),
+        };
+
+        const subjectObservable = rxjs.Subject.create();
+
+        subjectObservable.subscribe(observerA);
+        subjectObservable.subscribe(observerB);
+
+        let clickCount = 0;
+        function myOperatorClick() {
+            clickCount++;
+            if (clickCount % 3 === 0) {
+                observerB.next(clickCount);
+            } else if (clickCount % 3 === 1) {
+                observerB.error(clickCount);
+            }
+            else {
+                observerB.complete();
+            }
+
+            observerA.next(clickCount);
+        }
+    </script>
+</html>

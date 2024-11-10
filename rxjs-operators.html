@@ -1,0 +1,41 @@
+<html>
+    <header>
+        <title>RX JS - Operators</title>
+        <script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js"></script>
+    </header>
+    <body>
+        Full Observer:
+        <button id="btn" onclick="myOperatorClick()">
+            Operator pipe n map
+        </button>
+        <br />
+        <div id="something-to-show"></div>
+    </body>
+    <script>
+        function showOnUi(data) {
+            const childDiv = document.createElement('div');
+            childDiv.innerText = 'Data: ' + data;
+            document.getElementById('something-to-show').appendChild(childDiv);
+        }
+
+        const fullObserver = {
+            next: x => showOnUi('fullObserver got a next value: ' + JSON.stringify(x)),
+            error: err => showOnUi('fullObserver got an error: ' + err),
+            complete: () => showOnUi('fullObserver got a complete notification'),
+        };
+
+        function myOperatorClick() {
+            rxjs
+                .of(0, 1, 2, 3, 4, 5, 6, 7, 8)
+                .pipe(
+                    rxjs.map((x) => x + 1),
+                    rxjs.groupBy((x) => x % 3),
+                    rxjs.mergeMap(group$ => 
+                        group$.pipe(
+                            rxjs.reduce((acc, cur) => [...acc, cur], [])
+                        )
+                    )
+                ).subscribe(fullObserver);
+        }
+    </script>
+</html>

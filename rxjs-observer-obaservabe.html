@@ -1,0 +1,71 @@
+<html>
+    <header>
+        <title>RX JS - Observer Observable</title>
+        <script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js"></script>
+    </header>
+    <body>
+        Full Observer:
+        <button id="btn" onclick="myFullObservableCompleteClick()">
+            Full observer complete observable subscribe
+        </button>
+        <button id="btn" onclick="myFullObservableErrorClick()">
+            Full observer error observable subscribe
+        </button>
+        <br />
+        <div id="something-to-show"></div>
+    </body>
+    <script>
+        function showOnUi(data) {
+            const childDiv = document.createElement('div');
+            childDiv.innerText = 'Data: ' + data;
+            document.getElementById('something-to-show').appendChild(childDiv);
+        }
+
+        const fullObserver = {
+            next: x => showOnUi('fullObserver got a next value: ' + x),
+            error: err => showOnUi('fullObserver got an error: ' + err),
+            complete: () => showOnUi('fullObserver got a complete notification'),
+        };
+
+        const completeObservable = rxjs.Observable.create((subscriber) => {
+                subscriber.next(1);
+                subscriber.next(2);
+                subscriber.next(3);
+                setTimeout(() => {
+                    subscriber.next(4);
+                }, 1000);
+                setTimeout(() => {
+                    subscriber.complete();
+                }, 2000);
+                setTimeout(() => {
+                    subscriber.next(5);
+                    subscriber.complete();
+                }, 3000);
+            });
+
+        function myFullObservableCompleteClick() {
+            completeObservable.subscribe(fullObserver);
+        }
+
+        const errorObservable = rxjs.Observable.create((subscriber) => {
+                subscriber.next(1);
+                subscriber.next(2);
+                subscriber.next(3);
+                setTimeout(() => {
+                    subscriber.next(4);
+                }, 1000);
+                setTimeout(() => {
+                    subscriber.error(5);
+                }, 2000);
+                setTimeout(() => {
+                    subscriber.next(6);
+                    subscriber.next(7);
+                    subscriber.complete();
+                }, 3000);
+            });
+        
+        function myFullObservableErrorClick() {
+            errorObservable.subscribe(fullObserver);
+        }
+    </script>
+</html>

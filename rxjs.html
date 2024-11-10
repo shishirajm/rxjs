@@ -1,0 +1,36 @@
+<html>
+    <header>
+        <title>RX JS</title>
+        <script src="https://unpkg.com/rxjs@^7/dist/bundles/rxjs.umd.min.js"></script>
+        <script>
+            let clickCount = 0;
+
+            function myBtnClick() {
+                clickCount++;
+                rxjs.of(1, 2, 3)
+                    .subscribe(x => {
+                        if (clickCount > 5) throw new Error('error');
+                        const childDiv = document.createElement('div');
+                        childDiv.innerText = 'Data: ' + x;
+                        document.getElementById('something-to-show').appendChild(childDiv);
+                    },
+                    err => { 
+                        const childDiv = document.createElement('div');
+                        childDiv.innerText = 'Some error' + err;
+                        document.getElementById('something-to-show').appendChild(childDiv);
+                    },
+                    () => {
+                        const childDiv = document.createElement('div');
+                        childDiv.innerText = 'All done';
+                        document.getElementById('something-to-show').appendChild(childDiv);
+                    });
+            }
+        </script>
+    </header>
+    <body>
+        <button id="btn" onclick="myBtnClick()">
+            Click Me
+        </button>
+        <div id="something-to-show"></div>
+    </body>
+</html>
